@@ -5,6 +5,7 @@ This package shows the color name.
 Sources:
 
 - https://github.com/meodai/color-names
+- https://github.com/jonathantneal/color-names
 - http://chir.ag/projects/name-that-color/
 
 ## Installation
