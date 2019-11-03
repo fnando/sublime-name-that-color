@@ -1,9 +1,13 @@
 import sublime, sublime_plugin
 import json
 import io
+import os
 from . import utils
 
-with io.open("colors.json", "r", encoding="utf8") as json_file:
+dir_path = os.path.dirname(os.path.realpath(__file__))
+json_file_path = os.path.join(dir_path, "colors.json")
+
+with io.open(json_file_path, "r", encoding="utf8") as json_file:
   colors = json.load(json_file)
 
 class NameThatColorCommand(sublime_plugin.TextCommand):
