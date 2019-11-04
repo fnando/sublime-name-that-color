@@ -114,6 +114,20 @@ class Encycolorpedia
   end
 end
 
+class Sip
+  def self.call(colors)
+    config_file = File.expand_path("/Applications/Sip.app/Contents/Resources/ColorList.json")
+
+    return config_file unless File.file?(config_file)
+
+    json_string = File.read(config_file)
+
+    JSON.parse(json_string).each_with_object(colors) do |(color, name)|
+      colors[color] = name
+    end
+  end
+end
+
 class Extract
   def self.call
     colors = [
@@ -122,7 +136,8 @@ class Extract
       Meodai,
       Jonathantneal,
       Margaret2,
-      Encycolorpedia
+      Encycolorpedia,
+      Sip
     ].each_with_object({}) do |fetcher, buffer|
       fetcher.call(buffer)
     end
