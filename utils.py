@@ -27,6 +27,7 @@ def color_name(color):
   if color in colors:
     return colors[color]
 
+  try:
     url = "https://encycolorpedia.com/paints/schemes"
     data = bytes(json.dumps({"hex": color}), "utf8")
 
@@ -40,12 +41,15 @@ def color_name(color):
     if response.status != 200:
       return None
 
-    json_string = res.read()
+    json_string = response.read().decode("utf8")
     json_data = json.loads(json_string)
 
-    [name, _] = re.split(r"\s+\/", data["match"]["name"])
+    name = re.split(r"\s+\/", json_data["match"]["name"])[0]
 
     return name
+  except Exception as error:
+    print("Name That Color: ", error)
+    return None
 
 def expand_color(color):
   color = strip(color.upper())
@@ -82,5 +86,3 @@ if __name__ == "__main__":
       self.assertEqual(hex2rgb("ffffff"), (255, 255, 255))
 
   unittest.main()
-
-
