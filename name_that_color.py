@@ -1,14 +1,5 @@
 import sublime, sublime_plugin
-import json
-import io
-import os
 from . import utils
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
-json_file_path = os.path.join(dir_path, "colors.json")
-
-with io.open(json_file_path, "r", encoding="utf8") as json_file:
-  colors = json.load(json_file)
 
 class NameThatColorCommand(sublime_plugin.TextCommand):
   def run(self, edit):
@@ -20,8 +11,9 @@ class NameThatColorCommand(sublime_plugin.TextCommand):
         continue
 
       color = utils.expand_color(word)
+      name = utils.color_name(color)
 
-      if not color in colors:
+      if name is None:
         self.view.show_popup(
           "Name That Color: #%s doesn't have a name." % (color),
           location=-1,
@@ -29,8 +21,6 @@ class NameThatColorCommand(sublime_plugin.TextCommand):
         )
 
         continue
-
-      name = colors[color]
 
       def on_navigate(href):
         sublime.set_clipboard(href)
