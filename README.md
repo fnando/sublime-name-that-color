@@ -10,6 +10,11 @@ Sources:
 
 ## Installation
 
+### Setup Package Control Repository
+
+1. Follow the instructions from https://sublime.fnando.com.
+2. Open the command pallete, run “Package Control: Install Package“, then search for “Name That Color“.
+
 ### Git Clone
 
 Clone this repository into the Sublime Text “Packages” directory, which is located where ever the “Preferences” -> “Browse Packages” option in sublime takes you.
