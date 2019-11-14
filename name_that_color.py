@@ -1,5 +1,7 @@
 import sublime, sublime_plugin
 from . import utils
+import urllib.parse
+import cgi
 
 class NameThatColorCommand(sublime_plugin.TextCommand):
   def run(self, edit):
@@ -26,7 +28,7 @@ class NameThatColorCommand(sublime_plugin.TextCommand):
         continue
 
       def on_navigate(href):
-        sublime.set_clipboard(href)
+        sublime.set_clipboard(urllib.parse.unquote(href))
         window.status_message("Name That Color: name copied to clipboard.")
         view.hide_popup()
 
@@ -40,7 +42,7 @@ class NameThatColorCommand(sublime_plugin.TextCommand):
       """
 
       view.show_popup(
-        template % (color, name, name),
+        template % (color, cgi.escape(name), urllib.parse.quote(name)),
         location=-1,
         max_width=1000,
         on_navigate=on_navigate
