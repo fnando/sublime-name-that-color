@@ -1,7 +1,5 @@
-import sublime, sublime_plugin
+import sublime, sublime_plugin, cgi, webbrowser
 from . import utils
-import urllib.parse
-import cgi
 
 class NameThatColorCommand(sublime_plugin.TextCommand):
   def run(self, edit):
@@ -16,33 +14,46 @@ class NameThatColorCommand(sublime_plugin.TextCommand):
 
       window.status_message("Name That Color: fetching color name…")
       color = utils.expand_color(word)
-      name = utils.color_name(color)
+      found_color = utils.nearest_color(color)
+      window.status_message("Name That Color: done.")
 
-      if name is None:
-        view.show_popup(
-          "Name That Color: #%s doesn't have a name." % (color),
-          location=-1,
-          max_width=1000
-        )
+      def on_navigate(what):
+        if what == "compare":
+          webbrowser.open("https://codepen.io/fnando/full/zYYMvgj?colors=%s,%s" % (color, found_color["hex"]))
+          return
 
-        continue
+        if what == "color":
+          value = "#%s" % found_color["hex"]
+        else:
+          value = found_color[what]
 
-      def on_navigate(href):
-        sublime.set_clipboard(urllib.parse.unquote(href))
-        window.status_message("Name That Color: name copied to clipboard.")
+        sublime.set_clipboard(value)
+        window.status_message("Name That Color: {what} copied to clipboard.".format(what = what))
         view.hide_popup()
 
-      template = """
-        <br>
-        &nbsp;&nbsp;<strong>#%s</strong> is called <strong>%s</strong>.&nbsp;&nbsp;
-        <br>
-        &nbsp;&nbsp;<a href='%s'>Copy name</a>
-        <br>
-        &nbsp;
-      """
+      if found_color["exact_match"]:
+        template = """
+          <br>
+          &nbsp;&nbsp;<strong>#{hex}</strong> is called <strong>{escaped_name}</strong>.&nbsp;&nbsp;
+          <br><br>
+          &nbsp;&nbsp;<a href='name'>Copy name</a> | <a href='color'>Copy color</a>
+          <br>
+          &nbsp;
+        """
+      else:
+        template = """
+          <br>
+          &nbsp;&nbsp;<strong>#{wanted_color}</strong> doesn't have a name.&nbsp;&nbsp;
+          <br><br>
+          &nbsp;&nbsp;The nearest color is <strong>{escaped_name}</strong> - #<strong>{hex}</strong>.&nbsp;&nbsp;
+          <br><br>
+          &nbsp;&nbsp;<a href='name'>Copy name</a> | <a href='color'>Copy color</a> | <a href='compare'>Compare</a>&nbsp;&nbsp;
+          <br>
+          &nbsp;
+        """
 
       view.show_popup(
-        template % (color, cgi.escape(name), urllib.parse.quote(name)),
+        template.format(wanted_color=color, hex=found_color["hex"], escaped_name=cgi.escape(found_color["name"])),
         location=-1,
         max_width=1000,
         on_navigate=on_navigate

@@ -108,8 +108,8 @@ class Encycolorpedia
     html = Nokogiri::HTML(html_string)
 
     html.css("li > a[style]").each_with_object(colors) do |link, buffer|
-      name, color = link.text.split("#")
-      buffer[color.upcase] = name
+      name, color = link.inner_html.split("<br>")
+      buffer[color[1..-1].upcase] = name
     end
   end
 end
@@ -142,12 +142,29 @@ class Extract
       fetcher.call(buffer)
     end
 
-    colors = colors.sort_by {|color, _name| color }
-                   .map {|(color, name)| [color, scrub(name)] }
+    colors = colors
+             .sort_by {|color, _name| color }
+             .map {|(color, name)| build_json(color, name) }
 
     File.open(File.expand_path("#{__dir__}/../colors.json"), "w") do |io|
-      io << JSON.pretty_generate(Hash[colors])
+      io << JSON.pretty_generate(colors)
     end
+  end
+
+  def self.build_json(color, name)
+    [color, name]
+  end
+
+  def self.rgb_to_int(rgb)
+    rgb[0] << 16 | rgb[1] << 8 | rgb[2]
+  end
+
+  def self.hex2rgb(color)
+    [
+      color[0..1],
+      color[2..3],
+      color[4..5]
+    ].map {|component| component.to_s.to_i(16) }
   end
 end
 

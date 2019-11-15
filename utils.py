@@ -1,10 +1,4 @@
-import io
-import json
-import os
-import re
-import struct
-import urllib.parse
-import urllib.request
+import io, json, os, re
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 json_file_path = os.path.join(dir_path, "colors.json")
@@ -12,44 +6,17 @@ json_file_path = os.path.join(dir_path, "colors.json")
 with io.open(json_file_path, "r", encoding="utf8") as json_file:
   colors = json.load(json_file)
 
-def strip(color):
-  return color.strip(" ").lstrip("#")
-
 def is_color(color):
   color = strip(color)
   pattern = re.compile(r"^([0-9a-f]{3}|[0-9a-f]{6})$", re.IGNORECASE)
   return pattern.match(color) != None
 
+def strip(color):
+  return color.strip(" ").lstrip("#")
+
 def hex2rgb(color):
-  return struct.unpack("BBB", expand_color(color).decode("hex"))
-
-def color_name(color):
-  if color in colors:
-    return colors[color]
-
-  try:
-    url = "https://encycolorpedia.com/paints/schemes"
-    data = bytes(json.dumps({"hex": color}), "utf8")
-
-    headers = {
-      "Content-type": "application/json",
-      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15"
-    }
-    request = urllib.request.Request(url, data, headers)
-    response = urllib.request.urlopen(request)
-
-    if response.status != 200:
-      return None
-
-    json_string = response.read().decode("utf8")
-    json_data = json.loads(json_string)
-
-    name = re.split(r"\s+\/", json_data["match"]["name"])[0]
-
-    return name
-  except Exception as error:
-    print("Name That Color: ", error)
-    return None
+  color = expand_color(color)
+  return (int(color[:2], 16), int(color[2:4], 16), int(color[4:], 16))
 
 def expand_color(color):
   color = strip(color.upper())
@@ -60,8 +27,26 @@ def expand_color(color):
 
   return re.sub(r"^(.)(.)(.)$", r"\1\1\2\2\3\3", color)
 
-def retrieve_name(color):
-  pass
+def nearest_color(color):
+  min_diff = None
+  found_color = None
+  color = expand_color(color)
+  r1, g1, b1 = hex2rgb(color)
+
+  for info in colors:
+    r2, g2, b2 = hex2rgb(info[0])
+
+    diff = abs(r1 - r2) * 256 + abs(g1 - g2) * 256 + abs(b1 - b2) * 256
+
+    if min_diff is None or diff < min_diff:
+      min_diff = diff
+      found_color = info
+
+  return {
+    "hex": found_color[0],
+    "exact_match": found_color[0] == color,
+    "name": found_color[1]
+  }
 
 if __name__ == "__main__":
   import unittest
@@ -81,8 +66,13 @@ if __name__ == "__main__":
       self.assertEqual(expand_color("F00"), "FF0000")
       self.assertEqual(expand_color("#F00"), "FF0000")
 
-    def test_he2rgb(self):
-      self.assertEqual(hex2rgb("fff"), (255, 255, 255))
-      self.assertEqual(hex2rgb("ffffff"), (255, 255, 255))
+    def test_hex2rgb(self):
+      self.assertEqual(hex2rgb("abc"), (170, 187, 204))
+      self.assertEqual(hex2rgb("aabbcc"), (170, 187, 204))
+
+    def test_nearest_color(self):
+      self.assertEqual(nearest_color("#f00"), {"exact_match": True, "hex": "FF0000", "name": "Red"})
+      self.assertEqual(nearest_color("#ff0000"), {"exact_match": True, "hex": "FF0000", "name": "Red"})
+      self.assertEqual(nearest_color("#000012"), {"exact_match": False, "hex": "000011", "name": "Benthic Black"})
 
   unittest.main()
