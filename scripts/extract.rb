@@ -27,7 +27,7 @@ end
 
 def get(url)
   id = Digest::MD5.hexdigest(url)
-  cache_path = File.expand_path("#{__dir__}/../cache/#{id}")
+  cache_path = File.expand_path("#{__dir__}/../cache/#{id}.cache")
 
   return File.read(cache_path) if File.file?(cache_path)
 
