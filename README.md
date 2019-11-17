@@ -4,9 +4,13 @@ This package shows the color name.
 
 Sources:
 
-- https://github.com/meodai/color-names
-- https://github.com/jonathantneal/color-names
 - http://chir.ag/projects/name-that-color/
+- https://encycolorpedia.com
+- https://github.com/jonathantneal/color-names
+- https://github.com/Margaret2/pantone-colors
+- https://github.com/meodai/color-names
+- https://sipapp.io
+- https://www.htmlcsscolor.com/
 
 ## Installation
 

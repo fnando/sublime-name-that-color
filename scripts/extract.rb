@@ -115,8 +115,10 @@ class Encycolorpedia
 end
 
 class Sip
+  COLORS_FILE = "/Applications/Sip.app/Contents/Resources/ColorList.json"
+
   def self.call(colors)
-    config_file = File.expand_path("/Applications/Sip.app/Contents/Resources/ColorList.json")
+    config_file = File.expand_path(COLORS_FILE)
 
     return config_file unless File.file?(config_file)
 
