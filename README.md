@@ -23,7 +23,9 @@ Clone this repository into the Sublime Text “Packages” directory, which is l
 
 The default binding is `super+k, super+n`.
 
-![Name That Color in action](https://raw.github.com/fnando/sublime-name-that-color/master/NameThatColor.png)
+![Name That Color in action](https://raw.github.com/fnando/sublime-name-that-color/master/images/found-color.png)
+
+![Name That Color in action](https://raw.github.com/fnando/sublime-name-that-color/master/images/nearest-color.png)
 
 You can change it by defining a new shortcut binding like the following:
 
