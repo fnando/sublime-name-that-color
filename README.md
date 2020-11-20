@@ -31,6 +31,8 @@ The default binding is `super+k, super+n`.
 
 ![Name That Color in action](https://raw.github.com/fnando/sublime-name-that-color/main/images/nearest-color.png)
 
+![Name That Color: comparing colors](https://raw.github.com/fnando/sublime-name-that-color/main/images/compare-colors.png)
+
 You can change it by defining a new shortcut binding like the following:
 
 ```json
