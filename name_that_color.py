@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, cgi, webbrowser
+import sublime, sublime_plugin, html, webbrowser
 from . import utils
 
 class NameThatColorCommand(sublime_plugin.TextCommand):
@@ -19,7 +19,8 @@ class NameThatColorCommand(sublime_plugin.TextCommand):
 
       def on_navigate(what):
         if what == "compare":
-          webbrowser.open("https://codepen.io/fnando/full/zYYMvgj?colors=%s,%s" % (color, found_color["hex"]))
+          url = "https://codepen.io/fnando/full/zYYMvgj?colors=%s,%s" % (color, found_color["hex"])
+          webbrowser.open(url)
           return
 
         if what == "color":
@@ -53,7 +54,7 @@ class NameThatColorCommand(sublime_plugin.TextCommand):
         """
 
       view.show_popup(
-        template.format(wanted_color=color, hex=found_color["hex"], escaped_name=cgi.escape(found_color["name"])),
+        template.format(wanted_color=color, hex=found_color["hex"], escaped_name=html.escape(found_color["name"])),
         location=-1,
         max_width=1000,
         on_navigate=on_navigate
